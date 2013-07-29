@@ -9,8 +9,6 @@ A web server for creating webpage screenshot or thumbnail (from url), with cache
 Installation
 ------------
 
-First you need to follow [python-webkit2png setup](https://github.com/adamn/python-webkit2png).
-
 
 You have two type of installation, the zip version (basic one) or the git version (better if you have access to git).
 
@@ -25,17 +23,28 @@ Install git:
 
     # Ubuntu
     apt-get install git-core
-    # or (centos)
+    # or Centos
     yum install git-core
 
 Then you can clone the repository:
 
     cd /opt
     mkdir python-screenshot-server
-    git clone https://github.com/Deisss/python-screenshot-server.git .
+    git clone --recursive https://github.com/Deisss/python-screenshot-server.git .
 
+We need to install everything for making python-webkit2png working:
 
+    # Ubuntu (as doc suggest)
+    apt-get install python-qt4 libqt4-webkit xvfb flashplugin-installer
+    # or Centos
+    yum install -y python PyQt4 PyQt4-webkit xorg-x11-server-Xvfb git-core
 
+Now the system include the python-webkit2png git also (threw clone --recursive), so lets finish installation:
+
+    cd python-webkit2png
+    python python-webkit2png/setup.py install
+
+The system should now be correctly setup
 
 Configuration
 -------------
