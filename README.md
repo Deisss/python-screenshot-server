@@ -23,15 +23,12 @@ Just grab the zip of this project, and uncompress it somewhere, __the system doe
 
 Install git:
 
-**Ubuntu:**
-
+    # Ubuntu
     apt-get install git-core
-
-**Centos:**
-
+    # or (centos)
     yum install git-core
 
-Clone the repository:
+Then you can clone the repository:
 
     cd /opt
     mkdir python-screenshot-server
