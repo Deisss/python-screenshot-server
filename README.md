@@ -56,20 +56,20 @@ You can configure the server (port, cache, how to find [python-webkit2png](https
 
 Here is a detailled list of available configuration:
 
-**[WEBKIT2PNG]**
+**Section: WEBKIT2PNG**
 
     root | the main path to find webkit2png (can be relative or absolute path)
     app  | From the root path, where to find webkit2png script (should not be needed to change)
     timeout | Integer value to describe timeout before considering a site is not responding
 
 
-**[SERVER]**
+**Section: SERVER**
 
     url | The url to bind on server, leave blank should be nice
     port | Integer value to specify the current port to use
 
 
-**[CACHE]**
+**Section: CACHE**
 
     enable | boolean to indicate if cache should be working or not (strongly pro for true)
     lifetime | The time an image will be consider as valid. You can put few days without trouble here
