@@ -95,7 +95,7 @@ Usage
 -----
 
 You can change the rendering behaviour threw parameter you pass to url:
-The default url should looks like this: **http://localhost:9494/url=http://www.google.fr**
+The most basic url should looks like this: **http://localhost:9494/url=http://www.google.fr**
 
 Parameter you can send
   * **url**: needed, specify the full url of the page (including http/https)
