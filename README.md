@@ -7,7 +7,7 @@ A web server for creating webpage screenshot or thumbnail (from url), with cache
 
 
 Installation
-============
+------------
 
 First you need to follow [python-webkit2png setup](https://github.com/adamn/python-webkit2png).
 
@@ -38,7 +38,7 @@ Then you can clone the repository:
 
 
 Configuration
-=============
+-------------
 
 You can configure the server (port, cache, how to find [python-webkit2png](https://github.com/adamn/python-webkit2png), by editing __config.ini__:
 
@@ -71,7 +71,7 @@ Here is a detailled list of available configuration:
 
 
 Start server
-============
+------------
 
 Just run python:
 
@@ -83,7 +83,7 @@ And that's it the server is running.
 
 
 Usage
-=====
+-----
 
 You can change the rendering behaviour threw parameter you pass to url:
 The default url should looks like this: **http://localhost:9494/url=http://www.google.fr**
