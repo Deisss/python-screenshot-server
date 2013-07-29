@@ -12,13 +12,13 @@ Installation
 First you need to follow [python-webkit2png setup](https://github.com/adamn/python-webkit2png).
 
 
-Basic one
----------
-Just grab the zip of this project, and uncompress it
+You have two type of installation, the zip version (basic one) or the git version (better if you have access to git).
+
+**Basic one**
+Just grab the zip of this project, and uncompress it somewhere, __the system does not need any installation__...
 
 
-Git one
--------
+**Git one**
 Install git:
 
 **Ubuntu:**
