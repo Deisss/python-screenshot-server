@@ -97,7 +97,8 @@ Usage
 You can change the rendering behaviour threw parameter you pass to url:
 The most basic url should looks like this: **http://localhost:9494/url=http://www.google.fr**
 
-Parameter you can send
+
+Parameter you can send are:
   * **url**: needed, specify the full url of the page (including http/https)
   * **xvfb**: Start and xvfb instance with the given size, example **90*60** which means 90px and 60px (width/height).
   * **geometry**: The geometry of the screenshot browser, example **250*80** wich means 250px and 80px (width/height).
@@ -107,9 +108,10 @@ Parameter you can send
   * **transparent**: Any value except "false" and "0" will be taken as true. Ask webkit2png to use transparent image (need CSS transparent in html page).
   * **encoded-url**: Any value except "false" and "0" will be taken as true. Say to webkit2png the url is encoded.
 
-Some test you can run:
+
+Some test you can run to check if it's working:
   * __http://localhost:9494/?url=http://www.google.com&transparent=true&scale=150*100__
   * __http://localhost:9494/?url=http://www.twitter.com&geometry=150*300&aspect-ratio=crop__
 
-  
+
 Enjoy !
