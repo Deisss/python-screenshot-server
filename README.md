@@ -37,7 +37,7 @@ We need to install everything for making python-webkit2png working:
     # Ubuntu (as doc suggest)
     apt-get install python-qt4 libqt4-webkit xvfb flashplugin-installer
     # or Centos
-    yum install -y python PyQt4 PyQt4-webkit xorg-x11-server-Xvfb git-core
+    yum install -y python PyQt4 PyQt4-webkit xorg-x11-server-Xvfb
 
 Now the system include the python-webkit2png git also (threw clone --recursive), so lets finish installation:
 
