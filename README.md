@@ -42,7 +42,7 @@ We need to install everything for making python-webkit2png working:
 Now the system include the python-webkit2png git also (threw clone --recursive), so lets finish installation:
 
     cd python-webkit2png
-    python python-webkit2png/setup.py install
+    python setup.py install
 
 The system should now be correctly setup
 
