@@ -51,6 +51,7 @@ Configuration
 
 You can configure the server (port, cache, how to find [python-webkit2png](https://github.com/adamn/python-webkit2png), ...), by editing __config.ini__:
 
+    cd /opt/python-screenshot-server
     vim config.ini
 
 
