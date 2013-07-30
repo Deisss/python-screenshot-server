@@ -37,7 +37,7 @@ We need to install everything for making [python-webkit2png](https://github.com/
     # Ubuntu (as doc suggest)
     apt-get install python-qt4 libqt4-webkit xvfb flashplugin-installer
     # or Centos
-    # You will need EPEL for PyQt4-webkit, here is for Centos 6 (may change):
+    # You will need EPEL for PyQt4-webkit, here is for Centos 6 (search on internet if this link is broken):
     su -c 'rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm'
     yum install -y python PyQt4 PyQt4-webkit xorg-x11-server-Xvfb
 
