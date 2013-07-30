@@ -22,9 +22,9 @@ Just grab the zip of this project, and uncompress it somewhere, __this system do
 Install git:
 
     # Ubuntu
-    apt-get install git-core
+    apt-get install git-core python python-setuptools
     # or Centos
-    yum install git-core
+    yum install git-core python python-setuptools
 
 Then you can clone the repository:
 
