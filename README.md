@@ -49,7 +49,7 @@ The system should now be correctly setup
 Configuration
 -------------
 
-You can configure the server (port, cache, how to find [python-webkit2png](https://github.com/adamn/python-webkit2png), by editing __config.ini__:
+You can configure the server (port, cache, how to find [python-webkit2png](https://github.com/adamn/python-webkit2png), ...), by editing __config.ini__:
 
     vim config.ini
 
