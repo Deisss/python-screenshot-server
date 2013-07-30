@@ -30,9 +30,9 @@ Then you can clone the repository:
 
     cd /opt
     mkdir python-screenshot-server
-    git clone --recursive https://github.com/Deisss/python-screenshot-server.git .
+    git clone --recursive https://github.com/Deisss/python-screenshot-server.git python-screenshot-server
 
-We need to install everything for making python-webkit2png working:
+We need to install everything for making [python-webkit2png](https://github.com/adamn/python-webkit2png) working:
 
     # Ubuntu (as doc suggest)
     apt-get install python-qt4 libqt4-webkit xvfb flashplugin-installer
@@ -41,7 +41,7 @@ We need to install everything for making python-webkit2png working:
 
 Now the system include the python-webkit2png git also (threw clone --recursive), so lets finish installation:
 
-    cd python-webkit2png
+    cd python-screenshot-server/python-webkit2png
     python setup.py install
 
 The system should now be correctly setup
