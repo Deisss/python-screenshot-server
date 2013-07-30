@@ -14,7 +14,7 @@ You have two type of installation, the zip version (basic one) or the git versio
 
 **Basic one**
 
-Just grab the zip of this project, and uncompress it somewhere, __this system does not need any installation, but [python-webkit2png](https://github.com/adamn/python-webkit2png) need to be installed__...
+Just grab the zip of this project, and uncompress it somewhere, __this system does not need any installation, but [python-webkit2png](https://github.com/adamn/python-webkit2png) need to be installed manually__...
 
 
 **Git one**
