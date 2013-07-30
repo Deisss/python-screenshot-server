@@ -35,6 +35,7 @@ webkit2png_timeout = cfg.get("WEBKIT2PNG", "timeout")
 # server variable
 server_url  = cfg.get("SERVER", "url")
 server_port = int(cfg.get("SERVER", "port"))
+server_localhost = cfg.get("SERVER", "localhost")
 
 # cache variable
 cache_enable   = cfg.get("CACHE", "enable")
@@ -56,18 +57,29 @@ if cache_enable == "true" and os.path.exists(cache_path) == 0:
 
 
 # Compile the domain check
-domainurl = re.compile(
+domainurl = ""
+if server_localhost == "false":
+  domainurl = re.compile(
      r'^(?:http)s?://' # http:// or https://
      r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
      r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
      r'(?::\d+)?' # optional port
      r'(?:/?|[/?]\S+)$', re.IGNORECASE
-)
+  )
+else:
+  domainurl = re.compile(
+        r'^(?:http|ftp)s?://' # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+        r'localhost|' #localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+        r'(?::\d+)?' # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE
+  )
 
 def testurl(url):
   """ Test if an url is valid or not (taken from django) """
   # We refuse localhost check
-  if "http://127" in url or "https://127" in url:
+  if server_localhost == "false" and ("http://127" in url or "https://127" in url):
     return False
 
   # Test the domain
