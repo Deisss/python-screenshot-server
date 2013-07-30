@@ -265,23 +265,31 @@ if cache_enable == "true":
   from threading import Timer
   import glob
 
+  # Initiate cache_current to start garbadge on boot
+  cache_current = cache_tick + 1
+
   def cache_garbadge():
-    # Clearing cache
-    print "*" * 30
-    print "* GARBADGE STARTING"
-    print "*" * 30
-    # cache_path
-    fileList = glob.glob(os.path.join(cache_path, "*.png"))
-    old = time.time() - cache_lifetime
+    global cache_current, cache_tick
+    if cache_current > cache_tick:
+      cache_current = 0
+      # Clearing cache
+      print "*" * 30
+      print "* GARBADGE STARTING"
+      print "*" * 30
+      # cache_path
+      fileList = glob.glob(os.path.join(cache_path, "*.png"))
+      old = time.time() - cache_lifetime
 
-    print fileList
-
-    for file in fileList:
-      if os.path.exists(file) and os.path.getctime(file) < old:
-        os.remove(file)
+      for file in fileList:
+        if os.path.exists(file) and os.path.getctime(file) < old:
+          print "Removing file from cache: %s" % file
+          os.remove(file)
 
     # Run forever
-    t = Timer(cache_tick, cache_garbadge)
+    # The cache_current allow to setup a short timer
+    # this help for shuting down quickly instead of waiting timer tick
+    cache_current += 1
+    t = Timer(1.0, cache_garbadge)
     t.start()
 
   # Start first time
