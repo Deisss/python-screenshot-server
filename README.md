@@ -14,7 +14,7 @@ You have two type of installation, the zip version (basic one) or the git versio
 
 **Basic one**
 
-Just grab the zip of this project, and uncompress it somewhere, __this system does not need any installation, but [python-webkit2png](https://github.com/adamn/python-webkit2png) need to be installed__...
+Just grab the zip of this project, and uncompress it somewhere, __this system does not need any installation, but [python-webkit2png](https://github.com/adamn/python-webkit2png) need to be installed manually__...
 
 
 **Git one**
@@ -22,26 +22,28 @@ Just grab the zip of this project, and uncompress it somewhere, __this system do
 Install git:
 
     # Ubuntu
-    apt-get install git-core
+    apt-get install git-core python python-setuptools
     # or Centos
-    yum install git-core
+    yum install git-core python python-setuptools
 
 Then you can clone the repository:
 
     cd /opt
     mkdir python-screenshot-server
-    git clone --recursive https://github.com/Deisss/python-screenshot-server.git .
+    git clone --recursive https://github.com/Deisss/python-screenshot-server.git python-screenshot-server
 
-We need to install everything for making python-webkit2png working:
+We need to install everything for making [python-webkit2png](https://github.com/adamn/python-webkit2png) working:
 
     # Ubuntu (as doc suggest)
     apt-get install python-qt4 libqt4-webkit xvfb flashplugin-installer
     # or Centos
+    # You will need EPEL for PyQt4-webkit, here is for Centos 6 (search on internet if this link is broken):
+    su -c 'rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm'
     yum install -y python PyQt4 PyQt4-webkit xorg-x11-server-Xvfb
 
 Now the system include the python-webkit2png git also (threw clone --recursive), so lets finish installation:
 
-    cd python-webkit2png
+    cd python-screenshot-server/python-webkit2png
     python setup.py install
 
 The system should now be correctly setup
@@ -49,8 +51,9 @@ The system should now be correctly setup
 Configuration
 -------------
 
-You can configure the server (port, cache, how to find [python-webkit2png](https://github.com/adamn/python-webkit2png), by editing __config.ini__:
+You can configure the server (port, cache, how to find [python-webkit2png](https://github.com/adamn/python-webkit2png), ...), by editing __config.ini__:
 
+    cd /opt/python-screenshot-server
     vim config.ini
 
 
