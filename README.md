@@ -100,6 +100,12 @@ Just run python ```python server.py```
 
 And that's it the server is running and ready to handle requests.
 
+Now, you may still get blank image with the following error: 'Cannot connect to X server'. It means you need Xvfb to run before:
+```sh
+    Xvfb :25 -screen 0 1024x10000x24 &
+    export DISPLAY=127.0.0.1:25.0
+```
+Should correct this, even on headless server.
 
 
 ## Usage
