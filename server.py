@@ -5,13 +5,7 @@
 # https://github.com/AdamN/python-webkit2png/
 #
 
-# OLD
-from SocketServer import ThreadingMixIn
-from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
-
-# NEW
 from bottle import route, get, run, request, response
-
 import urlparse, re, os, subprocess, hashlib, json, time
 
 try:
