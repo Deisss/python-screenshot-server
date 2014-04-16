@@ -107,6 +107,13 @@ Now, you may still get blank image with the following error: 'Cannot connect to 
 ```
 Should correct this, even on headless server.
 
+You may also be interested into the font packages to render font (you may see trouble with font on headless server), on CentOS:
+```sh
+    yum groupinstall fonts
+```
+
+Should remove blank fonts to show everything as expected!
+
 
 ## Usage
 
