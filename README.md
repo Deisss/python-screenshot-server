@@ -102,7 +102,7 @@ And that's it the server is running and ready to handle requests.
 
 Now, you may still get blank image with the following error: 'Cannot connect to X server'. It means you need Xvfb to run before:
 ```sh
-    Xvfb :25 -screen 0 1024x10000x24 &
+    Xvfb :25 -screen 0 4096x10000x24 2>/dev/null &
     export DISPLAY=127.0.0.1:25.0
 ```
 Should correct this, even on headless server.
