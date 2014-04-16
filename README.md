@@ -1,102 +1,108 @@
-python-screenshot-server
-========================
+# python-screenshot-server
 
 A web server for creating webpage screenshot or thumbnail (from url), with cache feature.
 
 
 
 
-Installation
-------------
-
+## Installation
 
 You have two type of installation, the zip version (basic one) or the git version (better if you have access to git).
+
+
 
 **Basic one**
 
 Just grab the zip of this project, and uncompress it somewhere, __this system does not need any installation, but [python-webkit2png](https://github.com/adamn/python-webkit2png) need to be installed manually__...
+You still need to get a copy of python bottle framework.
+
 
 
 **Git one**
 
 Install git:
-
+```sh
     # Ubuntu
     apt-get install git-core python python-setuptools
     # or Centos
     yum install git-core python python-setuptools
+```
 
 Then you can clone the repository:
-
+```sh
     cd /opt
     mkdir python-screenshot-server
     git clone --recursive https://github.com/Deisss/python-screenshot-server.git python-screenshot-server
+```
 
 We need to install everything for making [python-webkit2png](https://github.com/adamn/python-webkit2png) working:
-
+```sh
     # Ubuntu (as doc suggest)
     apt-get install python-qt4 libqt4-webkit xvfb flashplugin-installer
     # or Centos
     # You will need EPEL for PyQt4-webkit, here is for Centos 6 (search on internet if this link is broken):
     su -c 'rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm'
     yum install -y python PyQt4 PyQt4-webkit xorg-x11-server-Xvfb
+```
 
 Now the system include the python-webkit2png git also (threw clone --recursive), so lets finish installation:
-
+```sh
     cd python-screenshot-server/python-webkit2png
     python setup.py install
+```
+
+Finally, you will need python bottle to handle incomming user requests:
+```sh
+    pip install bottle
+```
 
 The system should now be correctly setup
 
-Configuration
--------------
+
+
+## Configuration
 
 You can configure the server (port, cache, how to find [python-webkit2png](https://github.com/adamn/python-webkit2png), ...), by editing __config.ini__:
-
+```sh
     cd /opt/python-screenshot-server
     vim config.ini
-
+```
 
 Here is a detailled list of available configuration:
 
 **Section: WEBKIT2PNG**
 
-    root => the main path to find webkit2png (can be relative or absolute path)
-    app  => From the root path, where to find webkit2png script (should not be needed to change)
-    timeout => Integer value to describe timeout before considering a site is not responding
+  * **root**: the main path to find webkit2png (can be relative or absolute path)
+  * **app**: From the root path, where to find webkit2png script (should not be needed to change)
+  * **timeout**: Integer value to describe timeout before considering a site is not responding
 
 
 **Section: SERVER**
 
-    url => The url to bind on server, leave blank should be nice
-    port => Integer value to specify the current port to use
-    localhost => Boolean, define if we allow localhost url (true) or not (false)
+  * **url**: The url to bind on server, leave blank should be nice
+  * **port**: Integer value to specify the current port to use
+  * **localhost**: Boolean, define if we allow localhost url (true) or not (false)
 
 
 **Section: CACHE**
 
-    enable => boolean to indicate if cache should be working or not (strongly pro for true)
-    lifetime => The time an image will be consider as valid. You can put few days without trouble here
-    path => The folder to store cache inside
-    garbadge => A thread is running in parallel to clear old image, indicate how long to wait before new gargadge pass
+  * **enable**: boolean to indicate if cache should be working or not (strongly pro for true)
+  * **lifetime**: The time an image will be consider as valid. You can put few days without trouble here
+  * **path**: The folder to store cache inside
+  * **garbadge**: A thread is running in parallel to clear old image, indicate how long to wait before new gargadge pass
 
 
 
 
-Start server
-------------
+## Start server
 
-Just run python:
+Just run python ```python server.py```
 
-    python server.py
-
-And that's it the server is running.
+And that's it the server is running and ready to handle requests.
 
 
 
-
-Usage
------
+## Usage
 
 You can change the rendering behaviour threw parameter you pass to url:
 The most basic url should looks like this: **http://localhost:9494/url=http://www.google.fr**
@@ -114,8 +120,8 @@ Parameter you can send are:
 
 
 Some test you can run to check if it's working:
-  * __http://localhost:9494/?url=http://www.google.com&transparent=true&scale=150*100__
-  * __http://localhost:9494/?url=http://www.twitter.com&geometry=150*300&aspect-ratio=crop__
+  * [goole thumbnail](http://localhost:9494/?url=http://www.google.com&transparent=true&scale=150*100)
+  * [twitter thumbnail](http://localhost:9494/?url=http://www.twitter.com&geometry=150*300&aspect-ratio=crop)
 
 
 Enjoy !
