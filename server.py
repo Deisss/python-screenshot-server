@@ -421,4 +421,4 @@ if __name__ == '__main__':
 
     # Start the web server
     printWelcomeMessage('SERVER RUNNING ON PORT %i' % serverCfg.port, 1)
-    run(host=serverCfg.url, port=serverCfg.port)
+    run(server='tornado', host=serverCfg.url, port=serverCfg.port)
