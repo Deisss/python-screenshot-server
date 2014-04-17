@@ -7,19 +7,6 @@ A web server for creating webpage screenshot or thumbnail (from url), with cache
 
 ## Installation
 
-You have two type of installation, the zip version (basic one) or the git version (better if you have access to git).
-
-
-
-**Basic one**
-
-Just grab the zip of this project, and uncompress it somewhere, __this system does not need any installation, but [python-webkit2png](https://github.com/adamn/python-webkit2png) need to be installed manually__...
-You still need to get a copy of python bottle framework.
-
-
-
-**Git one**
-
 Install git:
 ```sh
     # Ubuntu
@@ -56,7 +43,13 @@ Finally, you will need python bottle to handle incomming user requests:
     pip install bottle
 ```
 
-The system should now be correctly setup
+The system should now be correctly setup. But you may need extra content, especially on headless server.
+```sh
+    # On CentOS
+    yum groupinstall fonts
+```
+This will install most of basic fonts for rendering text on image. You will also need ```Xvfb``` to render graphics.
+
 
 
 
