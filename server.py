@@ -111,13 +111,13 @@ def testurl(url):
 # ------------------------------
 #
 
-@route('/checkhealth')
+@route('/checkhealth', method='OPTIONS')
 def haproxy():
     ''' Haproxy checkhealth status check '''
     response.status = 200
     return ''
 
-@route('/')
+@route('/', method='GET')
 def screenshot():
     ''' Create a new screenshot '''
     # Initiate an inifinite loop killer
