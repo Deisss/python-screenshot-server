@@ -38,9 +38,9 @@ Now the system include the python-webkit2png git also (threw clone --recursive),
     python setup.py install
 ```
 
-Finally, you will need python bottle to handle incomming user requests:
+Finally, you will need python bottle (and tornado as server) to handle incomming user requests:
 ```sh
-    pip install bottle
+    pip install bottle tornado
 ```
 
 The system should now be correctly setup. But you may need extra content, especially on headless server.
