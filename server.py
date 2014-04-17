@@ -5,43 +5,62 @@
 # https://github.com/AdamN/python-webkit2png/
 #
 
+from ConfigLoader import getCfg
 from bottle import route, get, run, request, response
-import urlparse, re, os, subprocess, hashlib, json, time
-
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
-
-
+from datetime import datetime
+import urlparse, re, os, subprocess, hashlib, json, time, logging, sys
 
 
 #
 # ------------------------------
-#     VAR (SEE INI FILE)
+#     SCRIPT VARIABLES
 # ------------------------------
 #
-cfg = configparser.ConfigParser()
-cfg.read('config.ini')
+class _webkit(object):
+    ''' Simple class to manipulate webkit2png configuration '''
+    def __init__(self):
+        self.root    = getCfg('WEBKIT2PNG', 'root')
+        self.app     = getCfg('WEBKIT2PNG', 'app')
+        # no need to convert to integer: only string allowed in Popen
+        self.timeout = getCfg('WEBKIT2PNG', 'timeout')
 
+webkitCfg = _webkit()
 
-# webkit2png variable
-webkit2png_root = cfg.get('WEBKIT2PNG', 'root')
-webkit2png_app  = cfg.get('WEBKIT2PNG', 'app')
-# no need to convert to integer: only string allowed in Popen
-webkit2png_timeout = cfg.get('WEBKIT2PNG', 'timeout')
+class _server(object):
+    ''' Simple class to manipulate server configuration '''
+    def __init__(self):
+        self.url       = getCfg('APPLICATION', 'url')
+        self.port      = getCfg('APPLICATION', 'port', 'int')
+        self.localhost = getCfg('APPLICATION', 'localhost')
 
-# server variable
-server_url       = cfg.get('SERVER', 'url')
-server_port      = int(cfg.get('SERVER', 'port'))
-server_localhost = cfg.get('SERVER', 'localhost')
+    def allowLocalhost(self):
+        if self.localhost == 'true' or self.localhost == '1' or self.localhost == 'True':
+            return True
+        return False
 
-# cache variable
-cache_enable   = cfg.get('CACHE', 'enable')
-cache_lifetime = int(cfg.get('CACHE', 'lifetime'))
-cache_path     = cfg.get('CACHE', 'path')
-cache_tick     = float(cfg.get('CACHE', 'garbadge'))
+serverCfg = _server()
 
+class _cache(object):
+    ''' Simple class to manipulate cache configuration '''
+    def __init__(self):
+        self.enable   = getCfg('CACHE', 'enable')
+        self.lifetime = getCfg('CACHE', 'lifetime', 'int')
+        self.path     = getCfg('CACHE', 'path')
+        self.tick     = getCfg('CACHE', 'garbadge', 'float')
+
+    def isEnabled(self):
+        if self.enable == 'true' or self.enable == '1' or self.enable == 'True':
+            return True
+        return False
+
+    def createCachePathIfNotExists(self):
+        if self.isEnabled() and not(self.pathExists()):
+            os.makedirs(self.path, 0600)
+
+    def pathExists(self):
+        return (os.path.exists(self.path) == True)
+
+cacheCfg = _cache()
 
 #
 # ------------------------------
@@ -49,15 +68,12 @@ cache_tick     = float(cfg.get('CACHE', 'garbadge'))
 # ------------------------------
 #
 
-
 # Creating cache folder
-if cache_enable == 'true' and os.path.exists(cache_path) == 0:
-    os.makedirs(cache_path, 0600)
-
+cacheCfg.createCachePathIfNotExists()
 
 # Compile the domain check
 domainurl = ''
-if server_localhost == 'false':
+if serverCfg.allowLocalhost() == False:
     domainurl = re.compile(
         r'^(?:http)s?://' # http:// or https://
         r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
@@ -78,7 +94,7 @@ else:
 def testurl(url):
     ''' Test if an url is valid or not (taken from django) '''
     # We refuse localhost check
-    if server_localhost == 'false' and ('http://127' in url or 'https://127' in url):
+    if serverCfg.allowLocalhost() == False and ('http://127' in url or 'https://127' in url):
         return False
 
     # Test the domain
@@ -109,8 +125,7 @@ def screenshot():
     # Get parameters
     url = request.GET.get('url', '').strip()
     if not(testurl(url)):
-        # TODO: use logging instead
-        print 'error'
+        logging.info('Submitted url is not valid: "%s"' % url)
 
     # Now we can create the final file, and return everything
     response.status = 200
@@ -132,9 +147,11 @@ def screenshot():
 #
 def createWebkit2PngParametersStructure(url, request):
     ''' Create the parameters base to use for using webkit2png '''
+    global webkitCfg
+
     # Create parameters content for webkit2png
-    endpath = os.path.join(webkit2png_root, webkit2png_app)
-    param = ['python', endpath, url, '-F', 'javascript', '-t', webkit2png_timeout];
+    endpath = os.path.join(webkitCfg.root, webkitCfg.app)
+    param = ['python', endpath, url, '-F', 'javascript', '-t', webkitCfg.timeout];
 
     # We parse request to find other elements
     return extendsParam(param, request)
@@ -148,7 +165,10 @@ def extendsParam(param, request):
         if key == '--xvfb' or key == '--geometry' or key == '--scale':
             # We have to split dual integer
             separated = re.split('[*|x]', value)
-            print separated
+            if len(separated) < 2:
+                logging.info('the key %s is invalid, should be at least 2 parameters separated with "*" or "x"...' % key)
+                continue
+
             if separated[0].isdigit() and separated[1].isdigit():
                 param.append(key)
                 param.append(separated[0])
@@ -185,22 +205,22 @@ def webkit2png(limit, param):
         param.pop()
         param.pop()
 
-    if cache_enable == 'true':
+    if cacheCfg.isEnabled():
         # Debug
-        print 'Cache is enable, searching into cache'
+        logging.debug('Cache is enable, searching into cache')
 
         # Computing md5 value of param
         jsonparam = json.dumps(param, sort_keys=True)
         md5param = hashlib.md5(jsonparam).hexdigest()
 
         # Creating time limit and file path
-        file = os.path.join(cache_path, md5param) + '.png'
-        old = time.time() - cache_lifetime
+        file = os.path.join(cacheCfg.path, md5param) + '.png'
+        old = time.time() - cacheCfg.lifetime
 
         # The file exist and is still valid
         if os.path.exists(file) and os.path.getctime(file) > old:
-            # Debug                
-            print 'Serving content from cache #%s' % file
+            # Debug
+            logging.debug('Serving content from cache #%s' % file)
 
             # We can serve that file, it's still good
             content = open(file, 'r')
@@ -209,12 +229,12 @@ def webkit2png(limit, param):
         # We need to generate a new file
         else:
             # Debug
-            print 'Need to generate a new file'
+            logging.debug('Need to generate a new file')
 
             # If file exist, we delete
             if os.path.exists(file):
                 # Debug
-                print 'Remove file (too old): %s' % file
+                logging.debug('Remove file (too old): %s' % file)
                 os.remove(file)
 
             # We ask system to output into file (if it's not set)
@@ -223,7 +243,7 @@ def webkit2png(limit, param):
 
             # We can generate a new file, and call this function again
             if limit > 5:
-                print 'ERROR: Limit is reached, system gone into infinite loop'
+                logging.error('Limit has been reached, system gone into infinite loop, stop processing request')
                 raise Exception('Limit of calling webkit2png exceed')
             else:
                 return generateImageOuput(limit, param, webkit2png)
@@ -234,7 +254,7 @@ def webkit2png(limit, param):
 def generateImageOuput(limit, param, callback):
     ''' Final image generation: sub process webkit2png and write to output '''
     # Debug
-    print 'Generating a new image with parameters: %s' % param
+    logging.debug('Generating a new image with parameters: %s' % param)
 
     # Starting python-webkit2png
     proc = subprocess.Popen(param, stdout=subprocess.PIPE)
@@ -253,6 +273,92 @@ def generateImageOuput(limit, param, callback):
     return content
 
 
+
+
+#
+# ------------------------------
+#     LOGGING
+# ------------------------------
+#
+class stdLogger(object):
+    ''' Redirect all std* to the logging plugin '''
+    def __init__(self, logger, level):
+        self.logger = logger
+        self.level  = level
+
+    def write(self, message):
+        if message != '\n':
+            self.logger.log(self.level, message)
+
+
+def getLogLevel():
+    ''' Get the current application minimum log level '''
+    level = getCfg('LOG', 'level').lower()
+    if level == 'info' or level == 'information':
+        return logging.INFO
+    elif level == 'warn' or level == 'warning':
+        return logging.WARN
+    elif level == 'error' or level == 'err':
+        return logging.ERROR
+    else:
+        return logging.DEBUG
+
+
+def configureLogger(_logFolder, _logFile):
+    ''' Start the logger instance and configure it '''
+    # Set debug level
+    logger = logging.getLogger()
+    logger.setLevel(getLogLevel())
+
+    # Format
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s | %(name)s -> %(message)s', '%Y-%m-%d %H:%M:%S')
+
+    # Remove default handler to keep only clean one
+    for hdlr in logger.handlers:
+        logger.removeHandler(hdlr)
+
+    # Create missing folder if needed
+    if not os.path.exists(_logFolder):
+        os.makedirs(_logFolder, 0700)
+
+    #
+    # ----------------------------
+    #   CREATE CONSOLE HANDLER
+    # ----------------------------
+    #
+
+    # Create console handler
+    consoleh = logging.StreamHandler()
+    consoleh.setLevel(getLogLevel())
+    consoleh.setFormatter(formatter)
+
+    # Set our custom handler
+    logger.addHandler(consoleh)
+
+    #
+    # ----------------------------
+    #   CREATE FILE HANDLER
+    # ----------------------------
+    #
+    fileh = logging.FileHandler(_logFile, 'a')
+    fileh.setLevel(getLogLevel())
+    fileh.setFormatter(formatter)
+
+    # Set our custom handler
+    logger.addHandler(fileh)
+
+
+def printWelcomeMessage(msg, place=10):
+    ''' Print any welcome message '''
+    logging.debug('*' * 30)
+    welcome = ' ' * place
+    welcome+= msg
+    logging.debug(welcome)
+
+    logging.debug('*' * 30 + '\n')
+
+
+
 #
 # ------------------------------
 #     CACHE GARBADGE COLLECTOR
@@ -260,34 +366,33 @@ def generateImageOuput(limit, param, callback):
 #
 
 # On cache active, we create the garbage
-if cache_enable == 'true':
+if cacheCfg.isEnabled():
     from threading import Timer
     import glob
 
-    # Initiate cache_current to start garbadge on boot
-    cache_current = cache_tick + 1
+    # Initiate current to start garbadge on boot
+    current = cacheCfg.tick + 1
 
     def cache_garbadge():
-        global cache_current, cache_tick
-        if cache_current > cache_tick:
-            cache_current = 0
+        global current, cacheCfg
+        if current > cacheCfg.tick:
+            current = 0
             # Clearing cache
-            print '*' * 30
-            print '* GARBADGE STARTING'
-            print '*' * 30
-            # cache_path
-            fileList = glob.glob(os.path.join(cache_path, '*.png'))
-            old = time.time() - cache_lifetime
+            printWelcomeMessage('GARBADGE STARTING', 2)
+
+            # cacheCfg.path
+            fileList = glob.glob(os.path.join(cacheCfg.path, '*.png'))
+            old = time.time() - cacheCfg.lifetime
 
             for file in fileList:
                 if os.path.exists(file) and os.path.getctime(file) < old:
-                    print 'Removing file from cache: %s' % file
+                    logging.debug('Removing file from cache: %s' % file)
                     os.remove(file)
 
         # Run forever
-        # The cache_current allow to setup a short timer
+        # The current allow to setup a short timer
         # this help for shuting down quickly instead of waiting timer tick
-        cache_current += 1
+        current += 1
         t = Timer(1.0, cache_garbadge)
         t.start()
 
@@ -298,8 +403,22 @@ if cache_enable == 'true':
 
 
 
-
-
 if __name__ == '__main__':
+    logFile   = getCfg('LOG', 'file')
+    logFolder = os.path.dirname(logFile)
+    configureLogger(logFolder, logFile)
+
+    # Print logger message
+    logging.debug('\n\nSystem start at: %s\nSystem log level: %s\n' % (datetime.now(), getCfg('LOG', 'level')))
+
+    # Configure logger for stdout and stderr
+    bottleLoggerStdout = logging.getLogger('bottle')
+    sys.stdout = stdLogger(bottleLoggerStdout, logging.INFO)
+    sys.stderr = stdLogger(bottleLoggerStdout, logging.INFO)
+
+    printWelcomeMessage('STARTING', 11)
+    printWelcomeMessage('SETUP ROUTES', 8)
+
     # Start the web server
-    run(host=str(server_url), port=int(server_port))
+    printWelcomeMessage('SERVER RUNNING ON PORT %i' % serverCfg.port, 1)
+    run(host=serverCfg.url, port=serverCfg.port)
