@@ -291,6 +291,15 @@ class stdLogger(object):
         if message != '\n':
             self.logger.log(self.level, message)
 
+class NoHaproxyLoggingFilter(logging.Filter):
+    ''' Disable haproxy logging filter '''
+    def __init__(self, name='NoHaproxyLoggingFilter'):
+        logging.Filter.__init__(self, name)
+
+    def filter(self, record):
+        return not record.getMessage().startswith('200 OPTIONS /checkhealth')
+
+
 
 def getLogLevel():
     ''' Get the current application minimum log level '''
@@ -348,6 +357,9 @@ def configureLogger(_logFolder, _logFile):
     # Set our custom handler
     logger.addHandler(fileh)
 
+def configureTornadoHaproxyLogging():
+    ''' Disable haproxy logging into default tornado element '''
+    logging.getLogger('tornado.access').addFilter(NoHaproxyLoggingFilter())
 
 def printWelcomeMessage(msg, place=10):
     ''' Print any welcome message '''
@@ -419,6 +431,8 @@ if __name__ == '__main__':
 
     printWelcomeMessage('STARTING', 11)
     printWelcomeMessage('SETUP ROUTES', 8)
+
+    configureTornadoHaproxyLogging()
 
     # Start the web server
     printWelcomeMessage('SERVER RUNNING ON PORT %i' % serverCfg.port, 1)
